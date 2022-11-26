@@ -2,19 +2,17 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.conf import settings
-
 from .tasks import send_activation_code
 
 
-User = get_user_model()
-
-
 def email_validator(email):
-        if not User.objects.filter(email=email).exists():
-            raise serializers.ValidationError(
-                'User with this email does not exist'
-            )
-        return email
+    if not User.objects.filter(email=email).exists():
+        raise serializers.ValidationError(
+            'User with this email does not exist'
+        )
+    return email
+
+User = get_user_model()
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -34,9 +32,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate_email(self, email):
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError(
-                'Email already in use'
+                'User with this email does not exist'
             )
         return email
+
 
     def validate(self, attrs):
         password = attrs.get('password')
@@ -64,12 +63,12 @@ class PasswordChangeSerializer(serializers.Serializer):
                 'Wrong password'
             )
         return old_password
-    
-    def validate(self, attrs: dict):
+
+    def validate(self, attrs):
         new_password = attrs.get('new_password')
         new_pass_confirm = attrs.get('new_pass_confirm')
         if new_password != new_pass_confirm:
-            raise serializers.ValidationError('Passwords do not match')
+            raise serializers.ValidationError('Password do not match')
         return attrs
 
     def set_new_password(self):
@@ -78,13 +77,9 @@ class PasswordChangeSerializer(serializers.Serializer):
         user.set_password(password)
         user.save()
 
-
+    
 class RestorePasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField(
-        required=True, 
-        max_length=255, 
-        validators=[email_validator]
-        )
+    email = serializers.EmailField(required=True, max_length=255, validators=[email_validator])
 
     def send_code(self):
         email = self.validated_data.get('email')
@@ -92,43 +87,36 @@ class RestorePasswordSerializer(serializers.Serializer):
         user.create_activation_code()
         send_mail(
             subject='Password restore',
-            message=f'Your code for password restore {user.activation_code}',
+            message=f'Your code for password{user.activation_code}',
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[email]
         )
 
 
 class SetRestoredPasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField(
-        required=True, 
-        max_length=255,
-        validators=[email_validator]
-        )
+    email = serializers.EmailField(required=True, max_length=255, validators=[email_validator])
     code = serializers.CharField(min_length=1, max_length=8, required=True)
     new_password = serializers.CharField(max_length=128, required=True)
     new_pass_confirm = serializers.CharField(max_length=128, required=True)
-
     def validate_code(self, code):
         if not User.objects.filter(activation_code=code).exists():
             raise serializers.ValidationError(
                 'Wrong code'
             )
-        return code
 
     def validate(self, attrs):
         new_password = attrs.get('new_password')
         new_pass_confirm = attrs.get('new_pass_confirm')
         if new_password != new_pass_confirm:
             raise serializers.ValidationError(
-                'Passwords do not match'
+                'Password do not match'
             )
         return attrs
 
     def set_new_password(self):
         email = self.validated_data.get('email')
         user = User.objects.get(email=email)
-        new_password = self.validated_data.get('new_password')
+        new_password = self.validated_data.get('new_passwprd')
         user.set_password(new_password)
         user.activation_code = ''
         user.save()
-
