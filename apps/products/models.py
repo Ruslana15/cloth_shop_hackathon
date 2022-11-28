@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from django.forms import ChoiceField
 from slugify import slugify
 from .utils import get_time
+from django.db.models import Sum
+
 
 
 User = get_user_model()
@@ -48,7 +50,7 @@ class Product(models.Model):
     size = models.CharField(max_length=10, choices=CHOICES, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField(default=0)
-    in_stock = models.BooleanField(default=False)
+    in_stock = models.BooleanField(default=False, verbose_name='В наличии')
     image = models.ImageField(upload_to='product_images')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -62,6 +64,8 @@ class Product(models.Model):
         on_delete=models.CASCADE,
         related_name='products'
     )
+
+    
     
     def save(self, *args, **kwargs):
         self.in_stock = self.quantity > 0
