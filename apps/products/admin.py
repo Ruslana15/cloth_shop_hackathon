@@ -11,6 +11,7 @@ class TabularInlineImage(admin.TabularInline):
 class ProductAdmin(admin.ModelAdmin):
     model = Product
     inlines = [TabularInlineImage, ]
+    list_display = ('title', 'category', 'price', 'quantity')
 
 
 admin.site.register(Product, ProductAdmin)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.forms import ChoiceField
 from slugify import slugify
 from .utils import get_time
 
@@ -36,6 +37,15 @@ class Product(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, primary_key=True, blank=True)
     description = models.TextField()
+    color = models.CharField(max_length=150, null=True)
+    CHOICES = (
+        ('s', 'S'),
+        ('m', 'M'),
+        ('l', 'L'),
+        ('xl', 'XL'),
+        ('xxl', 'XXl'),
+    )
+    size = models.CharField(max_length=10, choices=CHOICES, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.IntegerField(default=0)
     in_stock = models.BooleanField(default=False)
