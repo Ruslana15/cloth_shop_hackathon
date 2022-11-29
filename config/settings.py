@@ -49,6 +49,8 @@ INSTALLED_APPS = [
     'apps.account',
     'apps.products',
     'apps.review',
+    'apps.like',
+
 
 ]
 
