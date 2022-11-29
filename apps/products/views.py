@@ -2,11 +2,14 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django_filters import rest_framework as rest_filter
+from rest_framework import filters
+import django_filters
 
 from .serializers import (
     ProductSerializer,
     ProductListSerializer,
-    CategorySerializer
+    CategorySerializer,
 )
 from .models import Product, Category, ProductImage
 
@@ -37,8 +40,13 @@ class ProductViewSet(ModelViewSet):
         return super().retrieve(request, *args, **kwargs)
 
     
-
-
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+
+class ProductFilter(ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter, rest_filter.DjangoFilterBackend, filters.OrderingFilter]
+    search_fields = ['title']

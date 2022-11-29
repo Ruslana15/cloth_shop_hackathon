@@ -49,6 +49,11 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ProductFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('title')
+
 
 # {
 #     'user': 

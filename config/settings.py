@@ -152,7 +152,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-EMAIL_BACKENDS = 'django.core.mail.backends.smtp.EmailBackend' # класс отвечающий за отправку писем
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # класс отвечающий за отправку писем
 EMAIL_HOST_USER = config('EMAIL_HOST_USER') # почта с которой отправляются письма
 EMAIL_PORT = config('EMAIL_PORT', default=587)
 EMAIL_HOST = config('EMAIL_HOST') # какой хост используется для отправки писем
