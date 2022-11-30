@@ -19,6 +19,7 @@ class ProductSerializer(serializers.ModelSerializer):
         if quantity < 0:
             raise serializers.ValidationError('Количество не может быть отрицательным')
         return quantity
+
     
     def validate(self, attrs):
         user = self.context['request'].user
@@ -48,6 +49,11 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = '__all__'
 
+
+class ProductFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('title')
 
 
 # {

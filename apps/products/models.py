@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from django.forms import ChoiceField
+from django.forms import CharField, ChoiceField
 from slugify import slugify
 from .utils import get_time
 from django.db.models import Sum
@@ -39,8 +39,10 @@ class Product(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, primary_key=True, blank=True)
     description = models.TextField()
-    color = models.CharField(max_length=150, null=True)
+    color1 = models.CharField(max_length=20 , null=True)
+    color2 = models.CharField(max_length=20, blank=True, null=True)
     CHOICES = (
+        ('all', 'ALL'),
         ('s', 'S'),
         ('m', 'M'),
         ('l', 'L'),
@@ -49,6 +51,7 @@ class Product(models.Model):
     )
     size = models.CharField(max_length=10, choices=CHOICES, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    sale = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Скидка')
     quantity = models.IntegerField(default=0)
     in_stock = models.BooleanField(default=False, verbose_name='В наличии')
     image = models.ImageField(upload_to='product_images')
@@ -57,13 +60,14 @@ class Product(models.Model):
     views_count = models.IntegerField(default=0)
     category = models.ForeignKey(
         to=Category, 
-        on_delete=models.CASCADE, 
+        on_delete=models.SET_NULL,
+        null=True,
         related_name='products')
-    user = models.ForeignKey(
-        to=User,
-        on_delete=models.CASCADE,
-        related_name='products'
-    )
+    # user = models.ForeignKey(
+    #     to=User,
+    #     on_delete=models.CASCADE,
+    #     related_name='products'
+    # )
 
     
     
@@ -89,3 +93,17 @@ class ProductImage(models.Model):
         return f"Image to {self.product.title}"
 
 
+class RatingStar(models.Model):
+    value = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.value
+
+    class Meta:
+        verbose_name = 'Звезда рейтинга'
+        verbose_name_plural = 'Звезды рейтинга'
+
+
+class Rating(models.Model):
+    star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Звезда')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')

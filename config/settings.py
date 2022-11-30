@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'rest_framework_simplejwt',
+    'corsheaders', 
 
     'apps.account',
     'apps.products',
@@ -57,11 +58,15 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    
+
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -154,7 +159,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-EMAIL_BACKENDS = 'django.core.mail.backends.smtp.EmailBackend' # класс отвечающий за отправку писем
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # класс отвечающий за отправку писем
 EMAIL_HOST_USER = config('EMAIL_HOST_USER') # почта с которой отправляются письма
 EMAIL_PORT = config('EMAIL_PORT', default=587)
 EMAIL_HOST = config('EMAIL_HOST') # какой хост используется для отправки писем
@@ -182,3 +187,5 @@ SIMPLE_JWT = {
 
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+
+CORS_ORIGIN_ALLOW_ALL = True  # CORS разрешить доступ ко всем доменам

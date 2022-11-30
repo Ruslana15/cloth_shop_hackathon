@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
@@ -23,13 +24,14 @@ class RegistrationView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(
-                'Thanks for registration Activate your account via linl in your mail',
+                'Спасибо за регистрацию Активируйте свой аккаунт через почту',
                 status=status.HTTP_201_CREATED
             )
 
 class AccountActivationView(APIView):
     def get(self, request, activation_code):
-        user = User.objects.filter(activation_code=activation_code).filter()
+        # user = User.objects.filter(activation_code=activation_code)
+        user = get_object_or_404(User, activation_code=activation_code)
         if not user:
             return Response(
                 'Page not found',
@@ -39,7 +41,7 @@ class AccountActivationView(APIView):
         user.activation_code = ''
         user.save()
         return Response(
-            'Account activation ! You can login now',
+            'Аккаунт активирован! Вы можете логинится',
             status=status.HTTP_200_OK
             )
 
@@ -50,7 +52,7 @@ class ChangePasswordView(APIView):
         if serializers.is_valid(raise_exception=True):
             serializers.set_new_password()
             return Response(
-                'Password succesfull changed',
+                'Пароль успешно изменен',
                 status=status.HTTP_200_OK
             )
 
@@ -58,18 +60,18 @@ class RestorePasswordView(APIView):
     def post(self, request: Request):
         serializers = RestorePasswordSerializer(data=request.data)
         if serializers.is_valid(raise_exception=True):
-            serializers.send_code()
+            serializers.send_code() 
             return Response(
-                'Code was sent to your email',
+                'Код был выслан на вашу почту',
                 status=status.HTTP_200_OK
             )
 
 class SetRestorePasswordView(APIView):
     def post(self, request: Response):
         serializers = SetRestoredPasswordSerializer(data=request.data)
-        if serializers.is_valid(raise_exception=True):
+        if serializers.is_valid(raise_exception=True):  
             return Response(
-                "Password re",
+                "Пароль изменен",
                 status=status.HTTP_200_OK
             )
 
@@ -79,7 +81,7 @@ class DeleteAccountView(APIView):
         username = request.username
         User.objects.get(username=username).delete()
         return Response(
-            'Account deleted succsesfully',
+            'Аккаунт успешно удален',
             status=status.HTTP_204_NO_CONTENT
         )
 
