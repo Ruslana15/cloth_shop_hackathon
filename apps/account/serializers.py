@@ -87,7 +87,7 @@ class RestorePasswordSerializer(serializers.Serializer):
         user.create_activation_code()
         send_mail(
             subject='Password restore',
-            message=f'Your code for password{user.activation_code}',
+            message=f'Your code for password  {user.activation_code}',
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[email]
         )

@@ -32,6 +32,10 @@ class ProductViewSet(ModelViewSet):
         if self.action == 'create':
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
+    
+    def get_sale(self, price):
+        price = int(self.price * (100% - self.sale) / 100)
+        return price
 
     def retrieve(self, request, *args, **kwargs):
         instance: Product = self.get_object() # Product

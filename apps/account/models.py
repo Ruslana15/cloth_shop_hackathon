@@ -1,8 +1,6 @@
 from django.db import models
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.utils.crypto import get_random_string
-import uuid
-
 
 
 class UserManager(BaseUserManager):
@@ -32,7 +30,6 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    # id = models.UUIDField(default = uuid.uuid4, editable = False)
     username = models.CharField('Username', max_length=50, primary_key=True)
     email= models.EmailField('Email', max_length=255, unique=True)
     is_active = models.BooleanField(default=False)
