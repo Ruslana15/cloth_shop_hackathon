@@ -36,7 +36,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('image', 'title', 'price', 'in_stock', 'slug')
+        fields = ('__all__')
     
     def to_representation(self, instance):
         rep = super().to_representation(instance)

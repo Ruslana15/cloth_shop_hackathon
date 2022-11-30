@@ -12,7 +12,6 @@ class ProductAdmin(admin.ModelAdmin):
     model = Product
     inlines = [TabularInlineImage, ]
     list_display = ('title', 'category', 'price', 'quantity', 'in_stock')
-    list_editable = ('in_stock',)
     fieldsets = (
         (None, {
             "fields": ("title", "slug"),
