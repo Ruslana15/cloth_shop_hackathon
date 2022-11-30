@@ -35,7 +35,7 @@ class ProductSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('image', 'title', 'price', 'in_stock', 'slug')
+        fields = ('image', 'title', 'price', 'in_stock', 'slug', 'sale')
     
     def to_representation(self, instance):
         rep = super().to_representation(instance)
@@ -53,6 +53,25 @@ class ProductFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('title')
+
+
+class HomepageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('user', 'title', 'image', 'slug', 'views_count')
+        # Article.objects.filter(max('views_count'))
+
+    # def to_representation(self, instance):
+    #     instance = super().to_representation(instance)
+    #     print(instance)
+    #     return instance
+
+
+class ArticleSerializerTop(serializers.ModelSerializer):
+
+    class Meta:
+        model = Article
+        fields = ('user_id', 'title', 'image', 'slug', 'views_count')
 
 
 # {

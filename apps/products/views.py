@@ -39,6 +39,12 @@ class ProductViewSet(ModelViewSet):
         instance.save()
         return super().retrieve(request, *args, **kwargs)
 
+    def get_sale(self):
+        instance: Product = self.get_sale()
+        instance.price = int(self.price * (100% - self.sale) / 100)
+        instance.save()
+        return Product
+
     
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
