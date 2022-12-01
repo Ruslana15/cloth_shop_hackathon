@@ -8,41 +8,41 @@ class TabularInlineImage(admin.TabularInline):
     fields = ['image']
 
 
-class ProductAdmin(admin.ModelAdmin):
-    model = Product
-    inlines = [TabularInlineImage, ]
-    list_display = ('title', 'category', 'price', 'quantity', 'in_stock')
-    fieldsets = (
-        (None, {
-            "fields": ("title", "slug"),
-        }),
-        (None, {
-            "fields": ("image",),
-        }),
-        (None, {
-            "fields": (("description",),)
-        }),
-        (None, {
-            "fields": ("category",),
-        }),
-        (None, {
-            "fields": (("color1", "color2"),)
-        }),
-        (None, {
-            "fields": ("size",),
-        }),
-        (None, {
-            "fields": (("price", "sale"),)
-        }),
-        (None, {
-            "fields": ("quantity",),
-        }),
-        (None, {
-            "fields": ("in_stock",),
-        }),
-    )
+# class ProductAdmin(admin.ModelAdmin):
+#     model = Product
+#     inlines = [TabularInlineImage, ]
+#     list_display = ('title', 'category', 'price', 'quantity', 'in_stock')
+    # fieldsets = (
+    #     (None, {
+    #         "fields": ("title", "slug"),
+    #     }),
+    #     (None, {
+    #         "fields": ("image",),
+    #     }),
+    #     (None, {
+    #         "fields": (("description",),)
+    #     }),
+    #     (None, {
+    #         "fields": ("category",),
+    #     }),
+    #     (None, {
+    #         "fields": (("color1", "color2"),)
+    #     }),
+    #     (None, {
+    #         "fields": ("size",),
+    #     }),
+    #     (None, {
+    #         "fields": (("price", "sale"),)
+    #     }),
+    #     (None, {
+    #         "fields": ("quantity",),
+    #     }),
+    #     (None, {
+    #         "fields": ("in_stock",),
+    #     }),
+    # )
 
 
 
-admin.site.register(Product, ProductAdmin)
+admin.site.register([Product, ProductImage])
 admin.site.register(Category)

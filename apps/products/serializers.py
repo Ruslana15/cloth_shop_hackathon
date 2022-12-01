@@ -56,8 +56,8 @@ class ProductFilterSerializer(serializers.ModelSerializer):
         fields = ('title')
 
 
-# {
-#     'user': 
-#     'title': 123123,
-#     'priuce': 12341234
-# }
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = 'image',
