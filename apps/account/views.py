@@ -30,7 +30,6 @@ class RegistrationView(APIView):
 
 class AccountActivationView(APIView):
     def get(self, request, activation_code):
-        # user = User.objects.filter(activation_code=activation_code)
         user = get_object_or_404(User, activation_code=activation_code)
         if not user:
             return Response(

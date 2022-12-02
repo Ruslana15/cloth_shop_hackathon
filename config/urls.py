@@ -39,9 +39,11 @@ urlpatterns = [
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('admin/', admin.site.urls),
     path('account/', include('apps.account.urls')),
-    path('blog/', include('apps.products.urls')),
+    path('shop/', include('apps.products.urls')),
 
 ]
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

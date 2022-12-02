@@ -23,4 +23,3 @@ urlpatterns = [
     path('delete-account/', DeleteAccountView.as_view(), name='delete_account')
 ]
 
-# TODO: протестить весь функционал

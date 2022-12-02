@@ -25,7 +25,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def validate_username(self, username):
         if User.objects.filter(username=username).exists():
             raise serializers.ValidationError(
-                'This username is already taken, please choose another'
+                    'This username is already taken, please choose another'
                 )
         return username
 
@@ -35,8 +35,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 'User with this email does not exist'
             )
         return email
-
-
+        
     def validate(self, attrs):
         password = attrs.get('password')
         password_confirm = attrs.pop('password_confirm')

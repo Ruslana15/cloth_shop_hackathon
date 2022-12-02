@@ -82,7 +82,7 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
-    image = models.ImageField(upload_to='product_images')
+    image = models.ImageField(upload_to='product_images/carousel')
     product = models.ForeignKey(
         to=Product,
         on_delete=models.CASCADE,
@@ -107,3 +107,4 @@ class RatingStar(models.Model):
 class Rating(models.Model):
     star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Звезда')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
+
