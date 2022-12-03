@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import Product, ProductImage, Category
-
 from apps.review.serializers import CommentSerializer
+from apps.like.serializers import LikeSerializer
+
 
 class ProductSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
@@ -20,34 +21,41 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Количество не может быть отрицательным')
         return quantity
 
-    
     def validate(self, attrs):
         user = self.context['request'].user
         attrs['user'] = user
         return attrs
 
     def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['comments'] = CommentSerializer(instance.comments.all(), many=True).data
-        rep['comments_count'] = instance.comments.all().count()
-        return rep
+        representation = super().to_representation(instance)
+        representation['comments_count'] = instance.comments.all().count()
+        representation['comments'] = CommentSerializer(
+            instance.comments.all(), many=True
+        ).data
+        representation['carousel'] = ProductImageSerializer(
+            instance.product_images.all(), many=True).data
+        representation['likes'] = instance.likes.all().count()
+        representation['liked_by'] = LikeSerializer(
+            instance.likes.all().only('user'), many=True).data
+        # rating = instance.ratings.aggregate(Avg('rating'))['rating__avg']
+        # if rating:
+        #     representation['rating'] = round(rating, 1)
+        # else:
+        #     representation['rating'] = 0.0
+        # {'rating__avg': 3.4}
+        return representation
 
 
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('__all__')
-    
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['comments_count'] = instance.comments.all().count()
-        return rep
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('title', 'slug', 'parent_category')
 
 
 class ProductFilterSerializer(serializers.ModelSerializer):
@@ -55,6 +63,12 @@ class ProductFilterSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('title')
 
+
+# {
+#     'user': 
+#     'title': 123123,
+#     'priuce': 12341234
+# }
 
 
 class ProductImageSerializer(serializers.ModelSerializer):

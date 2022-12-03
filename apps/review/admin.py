@@ -1,4 +1,8 @@
 from django.contrib import admin
 from .models import Comment
 
-admin.site.register(Comment)
+
+@admin.register(Comment)
+class CategoryAdmin(admin.ModelAdmin):
+     list_display = ('user', 'product', 'created_at')
+

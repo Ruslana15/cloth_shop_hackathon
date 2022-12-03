@@ -32,26 +32,41 @@ class Category(models.Model):
 
     class Meta:
         verbose_name = 'Категория'
-        verbose_name_plural = 'Категории'
+        verbose_name_plural = 'Category'
 
 
 class Product(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(max_length=220, primary_key=True, blank=True)
     description = models.TextField()
+    consists_of = models.CharField(
+        max_length=70,
+        blank=True,
+        null=True,
+        verbose_name='Состоит из'
+        )
     color1 = models.CharField(max_length=20 , null=True)
     color2 = models.CharField(max_length=20, blank=True, null=True)
     CHOICES = (
-        ('all', 'ALL'),
-        ('s', 'S'),
-        ('m', 'M'),
-        ('l', 'L'),
-        ('xl', 'XL'),
-        ('xxl', 'XXl'),
+        ('s', 'S / 46-48'),
+        ('m', 'M / 48-50'),
+        ('l', 'L / 50-52'),
+        ('xl', 'XL / 52-54'),
+        ('xxl', 'XXl / 54-56'),
     )
-    size = models.CharField(max_length=10, choices=CHOICES, blank=True, null=True)
+    size1 = models.CharField(max_length=10, choices=CHOICES, null=True)
+    size2 = models.CharField(max_length=10, choices=CHOICES, blank=True, null=True)
+    size3 = models.CharField(max_length=10, choices=CHOICES, blank=True, null=True)
+    size4 = models.CharField(max_length=10, choices=CHOICES, blank=True, null=True)
+    size5 = models.CharField(max_length=10, choices=CHOICES, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    sale = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, verbose_name='Скидка')
+    sale = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        verbose_name='Скидка'
+        )
     quantity = models.IntegerField(default=0)
     in_stock = models.BooleanField(default=False, verbose_name='В наличии')
     image = models.ImageField(upload_to='product_images')
@@ -86,25 +101,10 @@ class ProductImage(models.Model):
     product = models.ForeignKey(
         to=Product,
         on_delete=models.CASCADE,
-        related_name='images'
+        related_name='product_images'
     )
 
     def __str__(self) -> str:
         return f"Image to {self.product.title}"
 
-
-class RatingStar(models.Model):
-    value = models.PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return self.value
-
-    class Meta:
-        verbose_name = 'Звезда рейтинга'
-        verbose_name_plural = 'Звезды рейтинга'
-
-
-class Rating(models.Model):
-    star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Звезда')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
 

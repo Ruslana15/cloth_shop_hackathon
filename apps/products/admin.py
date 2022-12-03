@@ -4,45 +4,24 @@ from .models import Category, Product, ProductImage
 
 class TabularInlineImage(admin.TabularInline):
     model = ProductImage
-    extra = 0
+    extra = 3
     fields = ['image']
 
-
-# class ProductAdmin(admin.ModelAdmin):
-#     model = Product
-#     inlines = [TabularInlineImage, ]
-#     list_display = ('title', 'category', 'price', 'quantity', 'in_stock')
-    # fieldsets = (
-    #     (None, {
-    #         "fields": ("title", "slug"),
-    #     }),
-    #     (None, {
-    #         "fields": ("image",),
-    #     }),
-    #     (None, {
-    #         "fields": (("description",),)
-    #     }),
-    #     (None, {
-    #         "fields": ("category",),
-    #     }),
-    #     (None, {
-    #         "fields": (("color1", "color2"),)
-    #     }),
-    #     (None, {
-    #         "fields": ("size",),
-    #     }),
-    #     (None, {
-    #         "fields": (("price", "sale"),)
-    #     }),
-    #     (None, {
-    #         "fields": ("quantity",),
-    #     }),
-    #     (None, {
-    #         "fields": ("in_stock",),
-    #     }),
-    # )
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+     list_display = (
+        'title',
+        'category',
+        'price',
+        'quantity',
+        'slug',
+        'in_stock',
+        'created_at' 
+        )
+     inlines = [TabularInlineImage, ]
 
 
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+     list_display = ('title', 'parent_category')
 
-admin.site.register([Product, ProductImage])
-admin.site.register(Category)

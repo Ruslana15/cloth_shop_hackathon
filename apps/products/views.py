@@ -11,7 +11,7 @@ from .serializers import (
     ProductListSerializer,
     CategorySerializer,
 )
-from .models import Product, Category
+from .models import Product, Category, ProductImage
 
 
 class ProductViewSet(ModelViewSet):
