@@ -1,8 +1,9 @@
 from rest_framework import routers
-from .views import CommentView
+# from .views import CommentView
+from .views import CommentCreateDeleteView
 
 router = routers.DefaultRouter()
-router.register('comments', CommentView, 'comment')
+router.register('comment', CommentCreateDeleteView, 'comment')
 urlpatterns = [
     
 ]
