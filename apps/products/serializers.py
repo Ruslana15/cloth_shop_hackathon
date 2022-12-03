@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Product, ProductImage, Category
 
+from .permissions import IsStaff
+
 from apps.review.serializers import CommentSerializer
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -44,6 +46,33 @@ class ProductListSerializer(serializers.ModelSerializer):
         return rep
 
 
+class ProductCreateSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(
+        default=serializers.CurrentUserDefault(),
+        source='user.username'
+    )
+    carousel_img = serializers.ListField(
+        child=serializers.ImageField(),
+        write_only=True
+    )
+    permission_classes = [IsStaff]
+
+    class Meta:
+        model = Product
+        fields = '__all__'
+        # exclude = ('tag', )
+
+    def create(self, validated_data):
+        carousel_images = validated_data.pop('carousel_img')
+        # tag = validated_data.pop('tag')
+        product = Product.objects.create(**validated_data)
+        # product.tag.set(tag)
+        images = []
+        for image in carousel_images:
+            images.append(ProductImage(article=Product, image=image))
+        ProductImage.objects.bulk_create(images)
+        return product
+    
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -55,6 +84,24 @@ class ProductFilterSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('title')
 
+
+class HomepageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ('user', 'title', 'image', 'slug', 'views_count')
+        # Article.objects.filter(max('views_count'))
+
+    # def to_representation(self, instance):
+    #     instance = super().to_representation(instance)
+    #     print(instance)
+    #     return instance
+
+
+class ProductSerializerTop(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ('user_id', 'title', 'image', 'slug', 'views_count')
 
 # {
 #     'user': 

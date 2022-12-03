@@ -63,11 +63,11 @@ class Product(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='products')
-    # user = models.ForeignKey(
-    #     to=User,
-    #     on_delete=models.CASCADE,
-    #     related_name='products'
-    # )
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='products'
+    )
 
     
     
@@ -91,20 +91,3 @@ class ProductImage(models.Model):
 
     def __str__(self) -> str:
         return f"Image to {self.product.title}"
-
-
-class RatingStar(models.Model):
-    value = models.PositiveIntegerField(default=0)
-
-    def __str__(self):
-        return self.value
-
-    class Meta:
-        verbose_name = 'Звезда рейтинга'
-        verbose_name_plural = 'Звезды рейтинга'
-
-
-class Rating(models.Model):
-    star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name='Звезда')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, verbose_name='Продукт')
-
