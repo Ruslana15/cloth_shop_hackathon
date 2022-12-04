@@ -1,21 +1,28 @@
 from django.shortcuts import render
+from rest_framework.views import APIView
 from .serializers import LikeSerializer
 from rest_framework.response import Response
 
 
 
+class LikeView(APIView):
+    serializers_class = LikeSerializer
 
-class LikeView(detail=True, methods=['POST', 'DELETE']):
-    def like(self, request, pk=None):
-        post = self.get_object()
+    def post(self, request, pk=None):
+        # product = self.get_object()
         serializer = LikeSerializer(data=request.data, context={
             'request': request,
-            'post': post
+            # 'product': product
         })
         if serializer.is_valid(raise_exception=True):
-            if request.method == 'POST':
                 serializer.save(user=request.user)
                 return Response('Liked!')
-            if request.method == 'DELETE':
+
+    def delete(self, request):
+        serializer = LikeSerializer(data=request.data, context={
+            'request': request,
+            # 'product': product
+        })
+        if serializer.is_valid(raise_exception=True):
                 serializer.unlike()
                 return Response('Unliked!')

@@ -4,6 +4,8 @@ from django.forms import CharField, ChoiceField
 from slugify import slugify
 from .utils import get_time
 from django.db.models import Sum
+from django.contrib.postgres.fields import ArrayField
+
 
 
 
@@ -11,7 +13,7 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    title = models.CharField(max_length=100, unique=True)
+    title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, primary_key=True, blank=True)
     parent_category = models.ForeignKey(
         verbose_name='Родительская категория',
@@ -45,8 +47,7 @@ class Product(models.Model):
         null=True,
         verbose_name='Состоит из'
         )
-    color1 = models.CharField(max_length=20 , null=True)
-    color2 = models.CharField(max_length=20, blank=True, null=True)
+    color = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     CHOICES = (
         ('s', 'S / 46-48'),
         ('m', 'M / 48-50'),
@@ -78,11 +79,11 @@ class Product(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         related_name='products')
-    # user = models.ForeignKey(
-    #     to=User,
-    #     on_delete=models.CASCADE,
-    #     related_name='products'
-    # )
+    user = models.ForeignKey(
+        to=User,
+        on_delete=models.CASCADE,
+        related_name='products'
+    )
 
     
     
@@ -106,6 +107,3 @@ class ProductImage(models.Model):
 
     def __str__(self) -> str:
         return f"Image to {self.product.title}"
-
-
-

@@ -3,13 +3,15 @@ from .models import Comment
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = serializers.ReadOnlyField(
-        default=serializers.CurrentUserDefault(),
-        source='user.username'
-    )
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Comment
-        exclude = ['product']
+        fields = '__all__'
+
+    def validate(self, attrs):
+        user = self.context['request'].user
+        attrs['user'] = user
+        return attrs
 
     

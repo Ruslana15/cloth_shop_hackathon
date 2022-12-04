@@ -2,7 +2,7 @@ wheel
 djangorestframework
 django-filter
 drf-yasg
-djangorestframework-simplejwt
+djangorestframework-simplejwt==4.4.0
 python-decouple
 Pillow
 psycopg2-binary

@@ -11,13 +11,13 @@ class Comment(models.Model):
         on_delete=models.CASCADE,
         related_name='comments'
     )
+    text = models.TextField()
     product = models.ForeignKey(
         to=Product,
         on_delete=models.CASCADE,
         related_name='comments'
     )
-    text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Comment from {self.user.username} to {self.Product.title}'
+        return f'Comment from {self.user.username} to {self.product.title}'

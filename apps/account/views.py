@@ -24,7 +24,7 @@ class RegistrationView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(
-                'Thanks for registration! Activate your account via link in your mail',
+                'Спасибо за регистрацию! Активируйте свой аккунт через электронную почту',
                 status=status.HTTP_201_CREATED
             )
 
@@ -40,7 +40,7 @@ class AccountActivationView(APIView):
         user.activation_code = ''
         user.save()
         return Response(
-            'Account activated! You can login now', 
+            'Аккаунт активирован. Вы можете логинится', 
             status=status.HTTP_200_OK
             )
 
@@ -53,7 +53,7 @@ class ChangePasswordView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.set_new_password()
             return Response(
-                'Password changed succesfully',
+                'Пароль был успешно изменен',
                 status=status.HTTP_200_OK
             )
 
@@ -63,7 +63,7 @@ class RestorePasswordView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.send_code()
             return Response(
-                'Code was sent to your email',
+                'Ваш код был отправлен на электронную почту',
                 status=status.HTTP_200_OK
             )
 
@@ -74,7 +74,7 @@ class SetRestoredPasswordView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.set_new_password()
             return Response(
-                'Password restored successfully',
+                'Пароль успешно восстановлен',
                 status=status.HTTP_200_OK
             )
 
@@ -85,7 +85,7 @@ class DeleteAccountView(APIView):
         username = request.user.username
         User.objects.get(username=username).delete()
         return Response(
-            'Account deleted successfully',
+            'Аккаунт успешно удален',
             status=status.HTTP_204_NO_CONTENT
         )
 

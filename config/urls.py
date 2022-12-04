@@ -40,7 +40,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('apps.account.urls')),
     path('shop/', include('apps.products.urls')),
-
+    # path('likes/', include('apps.like.urls')),
+    
 ]
 
 if settings.DEBUG:
