@@ -28,10 +28,19 @@ class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     # serializer_class = ProductSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def create_product(self):
+        if self.action == 'create':
+            return ProductCreateSerializer
+        return super().get_serializer_class()
+
     def get_serializer_class(self):
         if self.action == 'list':
             return ProductListSerializer #/products/
         return ProductSerializer #/product/13/
+        
 
     def get_serializer_context(self):
         context = super().get_serializer_context()

@@ -52,27 +52,23 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         source='user.username'
     )
     carousel_img = serializers.ListField(
-        child=serializers.ImageField(),
+        child=serializers.FileField(),
         write_only=True
     )
-    permission_classes = [IsStaff]
 
     class Meta:
         model = Product
         fields = '__all__'
-        # exclude = ('tag', )
 
     def create(self, validated_data):
         carousel_images = validated_data.pop('carousel_img')
-        # tag = validated_data.pop('tag')
         product = Product.objects.create(**validated_data)
-        # product.tag.set(tag)
         images = []
         for image in carousel_images:
-            images.append(ProductImage(article=Product, image=image))
+            images.append(ProductImage(product=product, image=image))
         ProductImage.objects.bulk_create(images)
         return product
-    
+        
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -88,7 +84,7 @@ class ProductFilterSerializer(serializers.ModelSerializer):
 class HomepageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('user', 'title', 'image', 'slug', 'views_count')
+        fields = ('user', 'title', 'image', 'slug', 'price', 'views_count')
         # Article.objects.filter(max('views_count'))
 
     # def to_representation(self, instance):
@@ -101,7 +97,7 @@ class ProductSerializerTop(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ('user_id', 'title', 'image', 'slug', 'views_count')
+        fields = ('user_id', 'title', 'image', 'slug', 'price', 'views_count')
 
 # {
 #     'user': 
