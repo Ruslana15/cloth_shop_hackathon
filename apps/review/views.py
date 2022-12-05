@@ -1,8 +1,9 @@
+
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
-
 from .serializers import CommentSerializer
 from .models import Comment
+
 
 class CommentView(mixins.CreateModelMixin,
                 mixins.DestroyModelMixin,

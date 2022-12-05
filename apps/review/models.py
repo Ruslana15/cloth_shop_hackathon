@@ -18,10 +18,6 @@ class Comment(models.Model):
         related_name='comments'
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(
-        upload_to='comments_images', 
-        blank=True, 
-        null=True)
 
     def __str__(self):
         return f'Comment from {self.user.username} to {self.product.title}'

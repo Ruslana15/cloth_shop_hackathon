@@ -6,11 +6,13 @@ from .views import ProductViewSet, CategoryViewSet, ProductFilter, HomepageViewS
 router = DefaultRouter()
 router.register('products', ProductViewSet, 'product')
 router.register('categories', CategoryViewSet, 'category')
-router.register('product_filter', ProductFilter, 'search')
 router.register('homepage', HomepageViewSet, 'homepage')
+router.register('product_filter', ProductFilter, 'search')
 
 urlpatterns = [
     path('', include('apps.review.urls')),
+    path('', include('apps.like.urls')),
+
     
 ]
 urlpatterns += router.urls

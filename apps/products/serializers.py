@@ -4,6 +4,8 @@ from .models import Product, ProductImage, Category
 from .permissions import IsStaff
 
 from apps.review.serializers import CommentSerializer
+from apps.like.serializers import LikeSerializer
+
 
 class ProductSerializer(serializers.ModelSerializer):
     user = serializers.ReadOnlyField(source='user.username')
@@ -22,28 +24,35 @@ class ProductSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Количество не может быть отрицательным')
         return quantity
 
-    
     def validate(self, attrs):
         user = self.context['request'].user
         attrs['user'] = user
         return attrs
 
     def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['comments'] = CommentSerializer(instance.comments.all(), many=True).data
-        rep['comments_count'] = instance.comments.all().count()
-        return rep
+        representation = super().to_representation(instance)
+        representation['comments_count'] = instance.comments.all().count()
+        representation['comments'] = CommentSerializer(
+            instance.comments.all(), many=True
+        ).data
+        representation['carousel'] = ProductImageSerializer(
+            instance.product_images.all(), many=True).data
+        representation['likes'] = instance.likes.all().count()
+        representation['liked_by'] = LikeSerializer(
+            instance.likes.all().only('user'), many=True).data
+        # rating = instance.ratings.aggregate(Avg('rating'))['rating__avg']
+        # if rating:
+        #     representation['rating'] = round(rating, 1)
+        # else:
+        #     representation['rating'] = 0.0
+        # {'rating__avg': 3.4}
+        return representation
 
 
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('__all__')
-    
-    def to_representation(self, instance):
-        rep = super().to_representation(instance)
-        rep['comments_count'] = instance.comments.all().count()
-        return rep
+        fields = ('slug', 'image', 'title', 'price', 'likes', 'views_count')
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
@@ -68,18 +77,22 @@ class ProductCreateSerializer(serializers.ModelSerializer):
             images.append(ProductImage(product=product, image=image))
         ProductImage.objects.bulk_create(images)
         return product
-        
+
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = 'image', 
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = ('title', 'slug', 'parent_category')
 
 
 class ProductFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('title')
-
+        fields = ('title', )
 
 class HomepageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -87,10 +100,10 @@ class HomepageSerializer(serializers.ModelSerializer):
         fields = ('user', 'title', 'image', 'slug', 'price', 'views_count')
         # Article.objects.filter(max('views_count'))
 
-    # def to_representation(self, instance):
-    #     instance = super().to_representation(instance)
-    #     print(instance)
-    #     return instance
+    def to_representation(self, instance):
+        instance = super().to_representation(instance)
+        # print(instance)
+        return instance
 
 
 class ProductSerializerTop(serializers.ModelSerializer):

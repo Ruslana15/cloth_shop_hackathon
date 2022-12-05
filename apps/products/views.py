@@ -16,7 +16,7 @@ from .serializers import (
     ProductCreateSerializer,
     ProductSerializerTop
 )
-from .models import Product, Category
+from .models import Product, Category, ProductImage
 
 
 from django.utils.decorators import method_decorator
@@ -72,14 +72,16 @@ class ProductViewSet(ModelViewSet):
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    # filter_backends = [filters.SearchFilter, rest_filter.DjangoFilterBackend, filters.OrderingFilter]
+    # search_fields = ['title',]
 
 
 class ProductFilter(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filter_backends = [filters.SearchFilter, rest_filter.DjangoFilterBackend, filters.OrderingFilter]
-    search_fields = ['title']
-
+    search_fields = ['title', 'price']
+    
 
 class HomepageViewSet(ModelViewSet):
     queryset = Product.objects.all()
@@ -121,11 +123,11 @@ class HomepageViewSet(ModelViewSet):
     #     instance.views_count += 1
     #     instance.save()
     #     return super().retrieve(request, *args, **kwargs)
-    @action(methods=["GET"], detail=False, url_path="test")
+
+    @action(methods=["GET"], detail=False, url_path="")
     def first_ten_top(self, request):
         products = Product.objects.order_by('-views_count').values()
-        print(products)
+        # print(products)
         serializer = ProductSerializerTop(products, many=True).data[:10]
-
         return Response(data=serializer)
 

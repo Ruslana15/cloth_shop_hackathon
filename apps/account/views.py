@@ -24,60 +24,65 @@ class RegistrationView(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(
-                'Спасибо за регистрацию Активируйте свой аккаунт через почту',
+                'Спасибо за регистрацию! Активируйте свой аккунт через электронную почту',
                 status=status.HTTP_201_CREATED
             )
 
 class AccountActivationView(APIView):
     def get(self, request, activation_code):
-        user = get_object_or_404(User, activation_code=activation_code)
+        user = User.objects.filter(activation_code=activation_code).first()
         if not user:
             return Response(
-                'Page not found',
+                'Page not found', 
                 status=status.HTTP_404_NOT_FOUND
-            )
+                )
         user.is_active = True
         user.activation_code = ''
         user.save()
         return Response(
-            'Аккаунт активирован! Вы можете логинится',
+            'Аккаунт активирован. Вы можете логинится', 
             status=status.HTTP_200_OK
             )
 
+
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
-    def post(self, request: Response):
-        serializers = PasswordChangeSerializer(data=request.data, context={'request': request})
-        if serializers.is_valid(raise_exception=True):
-            serializers.set_new_password()
+
+    def post(self, request: Request):
+        serializer = PasswordChangeSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid(raise_exception=True):
+            serializer.set_new_password()
             return Response(
-                'Пароль успешно изменен',
+                'Пароль был успешно изменен',
                 status=status.HTTP_200_OK
             )
 
 class RestorePasswordView(APIView):
     def post(self, request: Request):
-        serializers = RestorePasswordSerializer(data=request.data)
-        if serializers.is_valid(raise_exception=True):
-            serializers.send_code() 
+        serializer = RestorePasswordSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.send_code()
             return Response(
-                'Код был выслан на вашу почту',
+                'Ваш код был отправлен на электронную почту',
                 status=status.HTTP_200_OK
             )
 
-class SetRestorePasswordView(APIView):
-    def post(self, request: Response):
-        serializers = SetRestoredPasswordSerializer(data=request.data)
-        if serializers.is_valid(raise_exception=True):  
+
+class SetRestoredPasswordView(APIView):
+    def post(self, request: Request):
+        serializer = SetRestoredPasswordSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.set_new_password()
             return Response(
-                "Пароль изменен",
+                'Пароль успешно восстановлен',
                 status=status.HTTP_200_OK
             )
 
 class DeleteAccountView(APIView):
-    permission_classes = (IsAuthenticated)
-    def delete(self, request: Response):
-        username = request.username
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request: Request):
+        username = request.user.username
         User.objects.get(username=username).delete()
         return Response(
             'Аккаунт успешно удален',
