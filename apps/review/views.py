@@ -6,6 +6,7 @@ from .models import Comment
 
 
 class CommentView(mixins.CreateModelMixin,
+                mixins.UpdateModelMixin,
                 mixins.DestroyModelMixin,
                 mixins.ListModelMixin,
                 GenericViewSet):

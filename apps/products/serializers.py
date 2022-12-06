@@ -84,40 +84,63 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = 'image', 
+        fields = ('image',) 
+
     
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('title', 'slug', 'parent_category')
+        fields = ('title', 'slug',)
 
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['products'] = ProductSerializer(instance.products.all(), many=True).data
+        return rep
+        
 
 class ProductFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('title', )
 
+class CategoryFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ('title', )
+    
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['comments_count'] = instance.comments.all().count()
+        representation['comments'] = CommentSerializer(
+            instance.comments.all(), many=True
+        ).data
+        representation['carousel'] = ProductImageSerializer(
+            instance.product_images.all(), many=True).data
+        representation['likes'] = instance.likes.all().count()
+        representation['liked_by'] = LikeSerializer(
+            instance.likes.all().only('user'), many=True).data
+
 
 class HomepageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('user', 'title', 'image', 'slug', 'views_count')
+        fields = ('user', 'title', 'image', 'price', 'slug', 'views_count')
         # Article.objects.filter(max('views_count'))
 
     def to_representation(self, instance):
         instance = super().to_representation(instance)
-        # print(instance)
         return instance
 
 
 class ProductSerializerTop(serializers.ModelSerializer):
-
+    # image = serializers.ImageField()
     class Meta:
         model = Product
-        fields = ('user_id', 'title', 'image', 'slug', 'views_count')
+        fields = ('title', 'price', 'image', 'slug', 'views_count')
 
-# {
-#     'user': 
-#     'title': 123123,
-#     'priuce': 12341234
-# }

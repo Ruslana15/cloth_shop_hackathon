@@ -12,26 +12,29 @@ from .serializers import (
     ProductSerializer,
     ProductListSerializer,
     CategorySerializer,
+    CategoryDetailSerializer,
     HomepageSerializer,
     ProductCreateSerializer,
     ProductSerializerTop
 )
-from .models import Product, Category, ProductImage
-
-
+from .models import Product, Category
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 
 
 class ProductViewSet(ModelViewSet):
+    @method_decorator(cache_page(60*60*2))
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     queryset = Product.objects.all()
     # serializer_class = ProductSerializer
 
     def get_serializer_class(self):
         if self.action == 'list':
-            return ProductListSerializer #/products/
-        return ProductSerializer #/product/13/
+            return ProductListSerializer
+        return ProductSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -43,12 +46,8 @@ class ProductViewSet(ModelViewSet):
             self.permission_classes = [IsAuthenticated]
         return super().get_permissions()
     
-    def get_sale(self, price):
-        price = int(self.price * (100% - self.sale) / 100)
-        return price
-
     def retrieve(self, request, *args, **kwargs):
-        instance: Product = self.get_object() # Product
+        instance: Product = self.get_object() 
         instance.views_count += 1
         instance.save()
         return super().retrieve(request, *args, **kwargs)
@@ -63,8 +62,18 @@ class ProductViewSet(ModelViewSet):
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    # filter_backends = [filters.SearchFilter, rest_filter.DjangoFilterBackend, filters.OrderingFilter]
-    # search_fields = ['title',]
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return CategorySerializer
+        return  CategoryDetailSerializer
+
+
+class CategoryFilter(ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    filter_backends = [filters.SearchFilter, rest_filter.DjangoFilterBackend, filters.OrderingFilter]
+    search_fields = ['slug']
 
 
 class ProductFilter(ModelViewSet):
@@ -86,6 +95,11 @@ class HomepageViewSet(ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+    # def create_product(self):
+    #     if self.action == 'create':
+    #         return ProductCreateSerializer
+    #     return super().get_serializer_class()
+
     def get_serializer_class(self):
         if self.action == 'list':
             return HomepageSerializer
@@ -96,7 +110,6 @@ class HomepageViewSet(ModelViewSet):
     def get_permissions(self):
         if self.action in ['create']:
             self.permission_classes = [IsAdminUser]
-
         if self.action in ['list', 'retrieve']:
             self.permission_classes = [AllowAny]
         if self.action == 'comment' and self.request.method == 'DELETE':
@@ -117,8 +130,11 @@ class HomepageViewSet(ModelViewSet):
 
     @action(methods=["GET"], detail=False, url_path="")
     def first_ten_top(self, request):
-        products = Product.objects.order_by('-views_count').values()
-        # print(products)
-        serializer = ProductSerializerTop(products, many=True).data[:10]
+        products = Product.objects.order_by('-views_count')
+        print(products)
+        serializer = ProductSerializerTop(products, many=True).data[:10]    
         return Response(data=serializer)
+    
+        
+        
 

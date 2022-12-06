@@ -9,14 +9,15 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = '__all__'
 
-    def create(self, validated_data):
-        product = self.context.get('request').data.get('product')
+    def created(self):
         user = self.context.get('request').user
+        product = self.context.get('request').data.get('product')
+        # like = Like.objects.filter(user=user).first()
         like = Like.objects.filter(user=user, product=product).first()
         if like:
             raise serializers.ValidationError('Already liked')
-        return super().create(validated_data)
-
+        return Like.objects.create(product=product, user=user)
+        
     def unlike(self):
         user = self.context.get('request').user
         product = self.context.get('request').data.get('product')

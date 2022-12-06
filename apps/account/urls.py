@@ -1,12 +1,12 @@
-from unicodedata import name
 from django.urls import path
-from .views import (RegistrationView,
-            AccountActivationView,
-            ChangePasswordView,
-            RestorePasswordView,
-            SetRestoredPasswordView,
-            DeleteAccountView
-            )
+from .views import (
+    RegistrationView,
+    AccountActivationView,
+    ChangePasswordView,
+    RestorePasswordView,
+    SetRestoredPasswordView,
+    DeleteAccountView
+    )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,

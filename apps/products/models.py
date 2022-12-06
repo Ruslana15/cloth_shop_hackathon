@@ -22,7 +22,7 @@ class Category(models.Model):
         related_name='subcategories',
         blank=True,
         null=True
-         )
+        )
     
     def __str__(self) -> str:
         return self.title

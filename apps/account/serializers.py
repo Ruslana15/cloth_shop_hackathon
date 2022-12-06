@@ -2,17 +2,17 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.conf import settings
+
 from .tasks import send_activation_code
 
+User = get_user_model()
 
 def email_validator(email):
-    if not User.objects.filter(email=email).exists():
-        raise serializers.ValidationError(
-            'Пользователь с таким адресом электронной почты не существует'
-        )
-    return email
-
-User = get_user_model()
+        if not User.objects.filter(email=email).exists():
+            raise serializers.ValidationError(
+                'Пользователь с таким адресом электронной почты не существует'
+            )
+        return email
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -27,8 +27,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Это имя пользователя уже занято, выберите другое'
                 )
-        return username
-        
+        return username   
 
     def validate_email(self, email):
         if User.objects.filter(email=email).exists():
@@ -36,7 +35,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
                 'Пользователь с таким адресом электронной почты не существует'
             )
         return email
-
         
     def validate(self, attrs):
         password = attrs.get('password')
@@ -65,7 +63,7 @@ class PasswordChangeSerializer(serializers.Serializer):
             )
         return old_password
 
-    def validate(self, attrs):
+    def validate(self, attrs: dict):  # было без : dict
         new_password = attrs.get('new_password')
         new_pass_confirm = attrs.get('new_pass_confirm')
         if new_password != new_pass_confirm:
@@ -80,7 +78,11 @@ class PasswordChangeSerializer(serializers.Serializer):
 
     
 class RestorePasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True, max_length=255, validators=[email_validator])
+    email = serializers.EmailField(
+        required=True,
+        max_length=255,
+        validators=[email_validator]
+        )
 
     def send_code(self):
         email = self.validated_data.get('email')
@@ -88,22 +90,28 @@ class RestorePasswordSerializer(serializers.Serializer):
         user.create_activation_code()
         send_mail(
             subject='Password restore',
-            message=f'Your code for password  {user.activation_code}',
+            message=f'Your code for password restore {user.activation_code}',
             from_email=settings.EMAIL_HOST_USER,
             recipient_list=[email]
         )
 
 
 class SetRestoredPasswordSerializer(serializers.Serializer):
-    email = serializers.EmailField(required=True, max_length=255, validators=[email_validator])
+    email = serializers.EmailField(
+        required=True,
+        max_length=255,
+        validators=[email_validator]
+        )
     code = serializers.CharField(min_length=1, max_length=8, required=True)
     new_password = serializers.CharField(max_length=128, required=True)
     new_pass_confirm = serializers.CharField(max_length=128, required=True)
+
     def validate_code(self, code):
         if not User.objects.filter(activation_code=code).exists():
             raise serializers.ValidationError(
                 'Не верный пароль'
             )
+        return code
 
     def validate(self, attrs):
         new_password = attrs.get('new_password')
@@ -117,7 +125,7 @@ class SetRestoredPasswordSerializer(serializers.Serializer):
     def set_new_password(self):
         email = self.validated_data.get('email')
         user = User.objects.get(email=email)
-        new_password = self.validated_data.get('new_passwprd')
+        new_password = self.validated_data.get('new_password')
         user.set_password(new_password)
         user.activation_code = ''
         user.save()

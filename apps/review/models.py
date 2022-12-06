@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
 from apps.products.models import Product
 
+from apps.account.models import User
+
 User = get_user_model()
+
 
 class Comment(models.Model):
     user = models.ForeignKey(
@@ -21,3 +23,4 @@ class Comment(models.Model):
 
     def __str__(self):
         return f'Comment from {self.user.username} to {self.product.title}'
+

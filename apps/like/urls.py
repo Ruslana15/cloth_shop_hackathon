@@ -4,5 +4,5 @@ from django.urls import path
 
 
 urlpatterns = [
-    path('like/', LikeView.as_view())
+    path('like/<str:slug>/', LikeView.as_view())
 ]
