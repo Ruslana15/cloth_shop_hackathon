@@ -82,38 +82,43 @@ class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = 'image', 
-
+    
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('title', 'slug', 'parent_category')
+        fields = ('title', 'slug',)
 
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['products'] = ProductSerializer(instance.products.all(), many=True).data
+        return rep
+        
 
 class ProductFilterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('title', )
 
+
 class HomepageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('user', 'title', 'image', 'slug', 'price', 'views_count')
+        fields = ('user', 'title', 'image', 'slug', 'views_count')
         # Article.objects.filter(max('views_count'))
 
     def to_representation(self, instance):
         instance = super().to_representation(instance)
-        # print(instance)
         return instance
 
 
 class ProductSerializerTop(serializers.ModelSerializer):
-
+    # image = serializers.ImageField()
     class Meta:
         model = Product
-        fields = ('user_id', 'title', 'image', 'slug', 'price', 'views_count')
-
-# {
-#     'user': 
-#     'title': 123123,
-#     'priuce': 12341234
-# }
+        fields = ('user_id', 'title', 'image', 'slug', 'views_count')

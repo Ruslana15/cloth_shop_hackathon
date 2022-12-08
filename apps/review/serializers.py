@@ -14,4 +14,7 @@ class CommentSerializer(serializers.ModelSerializer):
         attrs['user'] = user
         return attrs
 
+
+
+
     

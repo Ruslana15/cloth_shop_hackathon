@@ -1,4 +1,3 @@
-from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
@@ -7,15 +6,15 @@ from rest_framework import status
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 
-from .serializers import (UserRegistrationSerializer,
-PasswordChangeSerializer,
-RestorePasswordSerializer,
-SetRestoredPasswordSerializer
-)
-from apps.account import serializers
-
+from .serializers import (
+    UserRegistrationSerializer,
+    PasswordChangeSerializer,
+    RestorePasswordSerializer,
+    SetRestoredPasswordSerializer
+    )
 
 User = get_user_model()
+
 
 class RegistrationView(APIView):
     @swagger_auto_schema(request_body=UserRegistrationSerializer)
@@ -57,6 +56,7 @@ class ChangePasswordView(APIView):
                 status=status.HTTP_200_OK
             )
 
+
 class RestorePasswordView(APIView):
     def post(self, request: Request):
         serializer = RestorePasswordSerializer(data=request.data)
@@ -77,6 +77,7 @@ class SetRestoredPasswordView(APIView):
                 'Пароль успешно восстановлен',
                 status=status.HTTP_200_OK
             )
+
 
 class DeleteAccountView(APIView):
     permission_classes = [IsAuthenticated]

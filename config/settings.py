@@ -15,7 +15,6 @@ from pathlib import Path
 from decouple import config
 import os
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -30,7 +29,6 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG')
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
-
 
 # Application definition
 
@@ -51,6 +49,8 @@ INSTALLED_APPS = [
     'apps.products',
     'apps.review',
     'apps.like',
+    'apps.order',
+
 
 
 ]
@@ -64,9 +64,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-    
-
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -189,3 +186,10 @@ CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
 
 CORS_ORIGIN_ALLOW_ALL = True  # CORS разрешить доступ ко всем доменам
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'site_cache'),
+    }
+}

@@ -1,5 +1,5 @@
 wheel
-djangorestframework
+djangorestframework 
 django-filter
 drf-yasg
 djangorestframework-simplejwt==4.4.0
